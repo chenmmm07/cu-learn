@@ -1,6 +1,39 @@
-*.i
-*.ii
-*.gpu
-*.ptx
-*.cubin
-*.fatbin
+# Build directories
+build/
+bin/
+*.o
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg-info/
+dist/
+*.egg
+
+# Nsight reports
+*.ncu-rep
+*.nsys-rep
+*.sqlite
+
+# Plot outputs
+*.png
+*.jpg
+*.pdf
+
+# Benchmark results (optional)
+results/benchmark.csv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
