@@ -28,8 +28,7 @@ selected_methods = [
     "cublasSgemm",
     "v0_naive",
     "v1_shared",
-    "v2_unrolled",
-    "v3_regblock",
+    "v2_regblock",
 ]
 
 # 按照列表顺序筛选列

@@ -13,8 +13,7 @@
 
 1. **[优化 0](src/optimizations/00_naive/)**: Naive GEMM - 理解基础实现和性能瓶颈
 2. **[优化 1](src/optimizations/01_shared_memory/)**: Shared Memory - 优化全局内存访问
-3. **[优化 2](src/optimizations/02_loop_unrolling/)**: Loop Unrolling - 暴露指令级并行
-4. **[优化 3](src/optimizations/03_register_blocking/)**: Register Blocking - 提升算术强度
+3. **[优化 2](src/optimizations/02_register_blocking/)**: Register Blocking - 提升算术强度
 
 ## 🚀 快速开始
 
@@ -68,11 +67,8 @@ make -j$(nproc)
 # 优化 1: Shared Memory
 ./build/opt01_shared 2048 2048 2048
 
-# 优化 2: Loop Unrolling
-./build/opt02_unroll 2048 2048 2048
-
-# 优化 3: Register Blocking
-./build/opt03_regblock 2048 2048 2048
+# 优化 2: Register Blocking
+./build/opt02_regblock 2048 2048 2048
 ```
 
 #### 运行完整 benchmark
@@ -100,7 +96,7 @@ python plot.py
 # 默认会生成:
 # - time_ms.png: 时间对比图
 # - gflops.png: GFLOPS 对比图
-# - speedup_vs_cublas.png: 相对 cuBLAS 的加速比
+# - percent_of_cublas.png: 相对 cuBLAS 的性能百分比
 
 # 如需只绘制特定版本，编辑 plot.py 中的 selected_methods
 ```
@@ -116,10 +112,9 @@ python plot.py
 
 ```bash
 # 分析某个 kernel
-ncu --set full ./build/opt03_regblock 2048 2048 2048
-
-# 导出报告
-ncu --export report.ncu-rep ./build/opt03_regblock 2048 2048 2048
+ncu --set full -o report.ncu-rep /build/opt02_regblock 2048 2048 2048
+# 可视乎report文件
+ncu-ui report.ncu-rep
 ```
 
 ### Nsight Systems

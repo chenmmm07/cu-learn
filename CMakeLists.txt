@@ -27,18 +27,14 @@ target_link_libraries(opt00_naive cublas)
 add_executable(opt01_shared src/optimizations/01_shared_memory/gemm.cu)
 target_link_libraries(opt01_shared cublas)
 
-# Optimization 2: Loop Unrolling
-add_executable(opt02_unroll src/optimizations/02_loop_unrolling/gemm.cu)
-target_link_libraries(opt02_unroll cublas)
-
-# Optimization 3: Register Blocking
-add_executable(opt03_regblock src/optimizations/03_register_blocking/gemm.cu)
-target_link_libraries(opt03_regblock cublas)
+# Optimization 2: Register Blocking
+add_executable(opt02_regblock src/optimizations/02_register_blocking/gemm.cu)
+target_link_libraries(opt02_regblock cublas)
 
 # Full Benchmark
 add_executable(gemm_benchmark src/benchmarks/gemm_bench.cu)
 target_link_libraries(gemm_benchmark cublas)
 
 # 安装
-install(TARGETS gemm_benchmark opt00_naive opt01_shared opt02_unroll opt03_regblock DESTINATION bin)
+install(TARGETS gemm_benchmark opt00_naive opt01_shared opt02_regblock DESTINATION bin)
 install(FILES src/plot/plot.py DESTINATION bin/plot)

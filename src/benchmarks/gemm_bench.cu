@@ -75,7 +75,7 @@ static float measure_median_ms(void (*op)(void*), void* ctx,
     }
     return median_ms(ms);
 }
-// ------------------------- kernels (V0..V4) -------------------------
+// ------------------------- kernels (V0..V2) -------------------------
 __global__ void gemm_v0_naive(const float* __restrict__ A,
                               const float* __restrict__ B,
                               float* __restrict__ C,
@@ -114,32 +114,7 @@ __global__ void gemm_v1_shared(const float* __restrict__ A,
     }
     if (row < M && col < N) C[row * N + col] = sum;
 }
-__global__ void gemm_v2_unrolled(const float* __restrict__ A,
-                                 const float* __restrict__ B,
-                                 float* __restrict__ C,
-                                 int M, int N, int K) {
-    __shared__ float As[TILE_SIZE][TILE_SIZE];
-    __shared__ float Bs[TILE_SIZE][TILE_SIZE];
-    int row = blockIdx.y * TILE_SIZE + threadIdx.y;
-    int col = blockIdx.x * TILE_SIZE + threadIdx.x;
-    float sum = 0.0f;
-    for (int t = 0; t < (K + TILE_SIZE - 1) / TILE_SIZE; t++) {
-        int a_col = t * TILE_SIZE + threadIdx.x;
-        int b_row = t * TILE_SIZE + threadIdx.y;
-        As[threadIdx.y][threadIdx.x] =
-            (row < M && a_col < K) ? A[row * K + a_col] : 0.0f;
-        Bs[threadIdx.y][threadIdx.x] =
-            (b_row < K && col < N) ? B[b_row * N + col] : 0.0f;
-        __syncthreads();
-        #pragma unroll
-        for (int k = 0; k < TILE_SIZE; k++) {
-            sum += As[threadIdx.y][k] * Bs[k][threadIdx.x];
-        }
-        __syncthreads();
-    }
-    if (row < M && col < N) C[row * N + col] = sum;
-}
-__global__ void gemm_v3_register_blocking(const float* __restrict__ A,
+__global__ void gemm_v2_register_blocking(const float* __restrict__ A,
                                           const float* __restrict__ B,
                                           float* __restrict__ C,
                                           int M, int N, int K) {
@@ -210,7 +185,7 @@ struct KernelCtx {
     float* dC;
     int M, N, K;
     dim3 grid, block;
-    int which; // 0=v0,1=v1,2=v2,3=v3
+    int which; // 0=v0,1=v1,2=v2
 };
 static void op_kernel(void* p) {
     KernelCtx* ctx = (KernelCtx*)p;
@@ -222,10 +197,7 @@ static void op_kernel(void* p) {
             gemm_v1_shared<<<ctx->grid, ctx->block>>>(ctx->dA, ctx->dB, ctx->dC, ctx->M, ctx->N, ctx->K);
             break;
         case 2:
-            gemm_v2_unrolled<<<ctx->grid, ctx->block>>>(ctx->dA, ctx->dB, ctx->dC, ctx->M, ctx->N, ctx->K);
-            break;
-        case 3:
-            gemm_v3_register_blocking<<<ctx->grid, ctx->block>>>(ctx->dA, ctx->dB, ctx->dC, ctx->M, ctx->N, ctx->K);
+            gemm_v2_register_blocking<<<ctx->grid, ctx->block>>>(ctx->dA, ctx->dB, ctx->dC, ctx->M, ctx->N, ctx->K);
             break;
         default:
             break;
@@ -289,8 +261,7 @@ int main(int argc, char** argv) {
         "cublasSgemm",
         "v0_naive",
         "v1_shared",
-        "v2_unrolled",
-        "v3_regblock"
+        "v2_regblock"
     };
     for (int sz = start; sz <= stop; sz += step) {
         int M = sz, N = sz, K = sz;
@@ -314,7 +285,7 @@ int main(int argc, char** argv) {
         CHECK_CUDA(cudaMemcpy(hC_ref.data(), dC, bytesC, cudaMemcpyDeviceToHost));
         std::printf("%d,%s,%.6f,%.2f,1\n", sz, methods[0], cb_med, gflops(M,N,K,cb_med));
         // --- V0..V3 ---
-        for (int which = 0; which <= 3; which++) {
+        for (int which = 0; which <= 2; which++) {
             KernelCtx kc;
             kc.dA = dA; kc.dB = dB; kc.dC = dC;
             kc.M = M; kc.N = N; kc.K = K;
@@ -323,11 +294,11 @@ int main(int argc, char** argv) {
                 kc.block = dim3(16, 16);
                 kc.grid  = dim3((N + kc.block.x - 1) / kc.block.x,
                                 (M + kc.block.y - 1) / kc.block.y);
-            } else if (which == 3) { // v3 register blocking
+            } else if (which == 2) { // v2 register blocking
                 kc.block = dim3(BN / TN, BM / TM); // (8,8)
                 kc.grid  = dim3((N + BN - 1) / BN,
                                 (M + BM - 1) / BM);
-            } else { // v1 shared, v2 unrolled
+            } else { // v1 shared
                 kc.block = dim3(TILE_SIZE, TILE_SIZE);
                 kc.grid  = dim3((N + TILE_SIZE - 1) / TILE_SIZE,
                                 (M + TILE_SIZE - 1) / TILE_SIZE);

@@ -11,7 +11,7 @@ REPEATS=${7:-9}
 
 if [ -z "$VERSION" ]; then
     echo "Usage: $0 <version> [M N K] [warmup iters repeats]"
-    echo "Available versions: 0, 1, 2, 3"
+    echo "Available versions: 0, 1, 2"
     echo "Example: $0 0 2048 2048 2048 10 50 9"
     exit 1
 fi
@@ -26,15 +26,11 @@ case $VERSION in
         NAME="Shared Memory"
         ;;
     2)
-        BINARY="build/opt02_unroll"
-        NAME="Loop Unrolling"
-        ;;
-    3)
-        BINARY="build/opt03_regblock"
+        BINARY="build/opt02_regblock"
         NAME="Register Blocking"
         ;;
     *)
-        echo "Error: Invalid version. Use 0-3."
+        echo "Error: Invalid version. Use 0-2."
         exit 1
 esac
 
