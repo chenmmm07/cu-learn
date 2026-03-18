@@ -18,15 +18,15 @@ fi
 
 case $VERSION in
     0)
-        BINARY="build/opt00_naive"
+        BINARY="build/opt00"
         NAME="Naive"
         ;;
     1)
-        BINARY="build/opt01_shared"
+        BINARY="build/opt01"
         NAME="Shared Memory"
         ;;
     2)
-        BINARY="build/opt02_regblock"
+        BINARY="build/opt02"
         NAME="Register Blocking"
         ;;
     *)

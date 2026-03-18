@@ -1,0 +1,6 @@
+CompileFlags:
+  Add:
+    - -I/home/chenmin/3rdparty/cutlass/include
+    - -I/home/chenmin/3rdparty/cutlass/tools/util/include
+    - -I/home/chenmin/3rdparty/cutlass/examples/common
+    - -I/home/chenmin/proj/cu-learn/include

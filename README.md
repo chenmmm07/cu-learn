@@ -45,7 +45,7 @@ make -j$(nproc)
 
 ```bash
 # 基本用法
-./build/opt00_naive <M> <N> <K> [warmup] [iters] [repeats]
+./build/opt00 <M> <N> <K> [warmup] [iters] [repeats]
 
 # 参数说明:
 #   M, N, K: 矩阵维度 (必需)
@@ -62,13 +62,13 @@ make -j$(nproc)
 
 ```bash
 # 优化 0: Naive
-./build/opt00_naive 2048 2048 2048
+./build/opt00 2048 2048 2048
 
 # 优化 1: Shared Memory
-./build/opt01_shared 2048 2048 2048
+./build/opt01 2048 2048 2048
 
 # 优化 2: Register Blocking
-./build/opt02_regblock 2048 2048 2048
+./build/opt02 2048 2048 2048
 ```
 
 #### 运行完整 benchmark
@@ -112,8 +112,8 @@ python plot.py
 
 ```bash
 # 分析某个 kernel
-ncu --set full -o report.ncu-rep /build/opt02_regblock 2048 2048 2048
-# 可视乎report文件
+ncu --set full -o report.ncu-rep ./build/opt02 2048 2048 2048
+# 可视化report文件
 ncu-ui report.ncu-rep
 ```
 
