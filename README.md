@@ -15,6 +15,17 @@
 2. **[优化 1](src/optimizations/01_shared_memory/)**: Shared Memory - 优化全局内存访问
 3. **[优化 2](src/optimizations/02_register_blocking/)**: Register Blocking - 提升算术强度
 
+## 📖 示例代码
+
+`src/demo/` 目录包含工具和接口的使用示例：
+
+- **[cute_test.cu](src/demo/cute_test.cu)**: CuTe DSL 常见函数示例 (配套文档: [cute_notes.md](docs/cute_notes.md))
+
+运行示例：
+```bash
+./build/demo_cute_test
+```
+
 ## 🚀 快速开始
 
 ### 环境要求

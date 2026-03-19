@@ -1,7 +1,6 @@
 # Build directories
 build/
 bin/
-localtest/
 *.o
 
 # Python
@@ -38,3 +37,6 @@ results/benchmark.csv
 # OS
 .DS_Store
 Thumbs.db
+
+# Personal notes
+TODO.md

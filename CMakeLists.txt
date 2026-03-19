@@ -54,9 +54,9 @@ foreach(cu_file ${bench_files})
     list(APPEND install_targets ${target_name})
 endforeach()
 
-# 自动编译 src/localtest/ 下的所有 .cu 文件
-file(GLOB_RECURSE test_files "src/localtest/*.cu")
-foreach(cu_file ${test_files})
+# 自动编译 src/demo/ 下的所有 .cu 文件
+file(GLOB_RECURSE demo_files "src/demo/*.cu")
+foreach(cu_file ${demo_files})
     get_filename_component(file_name ${cu_file} NAME_WE)
     get_filename_component(parent_dir ${cu_file} DIRECTORY)
 
@@ -72,7 +72,7 @@ endforeach()
 
 # 自动编译其他目录下的 .cu 文件
 file(GLOB_RECURSE other_files "src/*/*.cu")
-list(REMOVE_ITEM other_files ${opt_files} ${bench_files} ${test_files})
+list(REMOVE_ITEM other_files ${opt_files} ${bench_files} ${demo_files})
 
 foreach(cu_file ${other_files})
     get_filename_component(file_name ${cu_file} NAME_WE)
